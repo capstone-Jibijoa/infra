@@ -19,32 +19,33 @@ FINAL_COLUMN_MAPPING = {
     '패널ID': 'panel_id',
 
     # --- welcome1 ---
-    '귀하의 성별은': 'gender',
-    '귀하의 출생년도는 어떻게 되십니까?': 'birth_year',
-    '회원님께서 현재 살고 계신 지역은 어디인가요?': 'region_major',
-    '그렇다면, [VALUE:Q12]의 어느 구에 살고 계신가요?': 'region_minor',
+    '귀하의 성별은': 'gender',  # M, F
+    '귀하의 출생년도는 어떻게 되십니까?': 'birth_year', # numeric
+    '회원님께서 현재 살고 계신 지역은 어디인가요?': 'region_major', # string
+    '그렇다면, [VALUE:Q12]의 어느 구에 살고 계신가요?': 'region_minor', # string
 
     # --- welcome2 ---
-    '결혼여부': 'marital_status',
-    '자녀수': 'children_count', # numeric
-    '가족수': 'family_size',
-    '최종학력': 'education_level',
-    '직업': 'job_title_raw',
-    '직무': 'job_duty',
-    '월평균 개인소득': 'income_personal_monthly',
-    '월평균 가구소득': 'income_household_monthly',
-    '보유전제품': 'owned_electronics',  # multi
-    '보유 휴대폰 단말기 브랜드': 'phone_brand',
-    '보유 휴대폰 모델명': 'phone_model_raw',
-    '보유차량여부': 'car_ownership',
-    '자동차 제조사': 'car_manufacturer',
-    '자동차 모델': 'car_model_raw',
-    '흡연경험': 'smoking_experience',   # multi
-    '흡연경험 담배브랜드': 'smoking_brand', # multi
-    '흡연경험 담배브랜드(기타브랜드)': 'smoking_brand_etc',
-    '궐련형 전자담배/가열식 전자담배 이용경험': 'e_cigarette_experience',   # multi',
-    '흡연경험 담배 브랜드(기타내용)': 'smoking_brand_other_details',    # multi
-    '음용경험 술': 'drinking_experience',
+    # Welcome_2nd.xlsx label sheet의 변수명으로 표시: SINGLE 형식
+    '결혼여부': 'marital_status',   # SINGLE : 1, 2, 3
+    '자녀수': 'children_count', # Numeric : 1, 2, ..., 10, (필드 값 없음)
+    '가족수': 'family_size',    # SINGLE : 1, 2, ..., 5
+    '최종학력': 'education_level',  # SINGLE : 1, 2, 3, 4
+    '직업': 'job_title_raw',    # SINGLE : 1, 2, ..., 15, String, (필드 값 없음)
+    '직무': 'job_duty', # SINGLE : 1, 2, ..., 21, String, (필드 값 없음)
+    '월평균 개인소득': 'income_personal_monthly',   # SINGLE : 1, 2, ..., 11, (필드 값 없음)
+    '월평균 가구소득': 'income_household_monthly',  # SINGLE : 1, 2, ..., 11, (필드 값 없음)
+    '보유전제품': 'owned_electronics',  # MULTI
+    '보유 휴대폰 단말기 브랜드': 'phone_brand', # SINGLE : 1, 2, 3, String, (필드 값 없음)
+    '보유 휴대폰 모델명': 'phone_model_raw',    # SINGLE : Q9_2 의 항목, 기타 숫자(이상값), String, (필드 값 없음)
+    '보유차량여부': 'car_ownership',    # SINGLE : 1, 2
+    '자동차 제조사': 'car_manufacturer',    # SINGLE : Q11_1의 항목, String, (필드 값 없음)
+    '자동차 모델': 'car_model_raw', # SINGLE : Q11_2의 항목, String, 몰라요, (필드 값 없음)
+    '흡연경험': 'smoking_experience',   # MULTI
+    '흡연경험 담배브랜드': 'smoking_brand', # MULTI
+    '흡연경험 담배브랜드(기타브랜드)': 'smoking_brand_etc', # String
+    '궐련형 전자담배/가열식 전자담배 이용경험': 'e_cigarette_experience',   # MULTI
+    '흡연경험 담배 브랜드(기타내용)': 'smoking_brand_other_details',    # String
+    '음용경험 술': 'drinking_experience',   # MULTI
     '음용경험 술(기타내용)': 'drinking_experience_other_details',   # string
 }
 
@@ -57,8 +58,7 @@ def load_and_standardize_file(path, final_mapping):
     """
     try:
         xlsx = pd.ExcelFile(path)
-        df_label = xlsx.parse(xlsx.sheet_names[1])
-
+        df_label = xlsx.parse(xlsx.sheet_names[1])  # 두번째 sheet(label)
         qcode_to_question = {}
         value_labels = {}
         current_q_code = None
@@ -92,7 +92,7 @@ def load_and_standardize_file(path, final_mapping):
                     continue
         
         # data sheet
-        df_data = xlsx.parse(xlsx.sheet_names[0])
+        df_data = xlsx.parse(xlsx.sheet_names[0])   # 첫번째 sheet(label)
 
         # Skip the first row of data, which seems to be a duplicate header
         df_data = df_data.iloc[1:].reset_index(drop=True)
