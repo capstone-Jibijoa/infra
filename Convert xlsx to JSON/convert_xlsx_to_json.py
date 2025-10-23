@@ -12,6 +12,7 @@ MERGE_KEY = 'panel_id'
 OUTPUT_JSON_PATH = 'merged_data.json'
 
 # 최종 영문 키 매핑 (Question Text -> English Key)
+# 별개의 답변으로 나올 수 있는 부분은 "_raw" 붙임
 FINAL_COLUMN_MAPPING = {
     # --- ID Fields --- String
     'x': 'panel_id',
@@ -21,8 +22,8 @@ FINAL_COLUMN_MAPPING = {
     # --- welcome1 ---
     '귀하의 성별은': 'gender',  # M, F
     '귀하의 출생년도는 어떻게 되십니까?': 'birth_year', # numeric
-    '회원님께서 현재 살고 계신 지역은 어디인가요?': 'region_major', # string
-    '그렇다면, [VALUE:Q12]의 어느 구에 살고 계신가요?': 'region_minor', # string
+    '회원님께서 현재 살고 계신 지역은 어디인가요?': 'region_major', # String
+    '그렇다면, [VALUE:Q12]의 어느 구에 살고 계신가요?': 'region_minor', # String
 
     # --- welcome2 ---
     # Welcome_2nd.xlsx label sheet의 변수명으로 표시: SINGLE 형식
@@ -32,7 +33,7 @@ FINAL_COLUMN_MAPPING = {
     '최종학력': 'education_level',  # SINGLE : 1, 2, 3, 4
     '직업': 'job_title_raw',    # SINGLE : 1, 2, ..., 15, String, (필드 값 없음)
     '직무': 'job_duty', # SINGLE : 1, 2, ..., 21, String, (필드 값 없음)
-    '월평균 개인소득': 'income_personal_monthly',   # SINGLE : 1, 2, ..., 11, (필드 값 없음)
+    '월평균 개인소득': 'income_personal_monthly_raw',   # SINGLE : 1, 2, ..., 11, (필드 값 없음)
     '월평균 가구소득': 'income_household_monthly',  # SINGLE : 1, 2, ..., 11, (필드 값 없음)
     '보유전제품': 'owned_electronics',  # MULTI
     '보유 휴대폰 단말기 브랜드': 'phone_brand', # SINGLE : 1, 2, 3, String, (필드 값 없음)
