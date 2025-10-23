@@ -9,7 +9,7 @@ FILE_PATHS = {
     'file2': 'data/Welcome/welcome_2nd.xlsx'
 }
 MERGE_KEY = 'panel_id'
-OUTPUT_JSON_PATH = 'merged_data.json'
+OUTPUT_JSON_PATH = 'welcome_data.json'
 
 # 최종 영문 키 매핑 (Question Text -> English Key)
 # 별개의 답변으로 나올 수 있는 부분은 "_raw" 붙임
