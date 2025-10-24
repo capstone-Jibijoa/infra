@@ -4,7 +4,7 @@ import pandas as pd
 
 # --- Configuration ---
 QPOLL_DATA_PATH = 'qpoll_data.json'
-MERGED_DATA_PATH = 'merged_data.json'
+MERGED_DATA_PATH = 'welcome_data.json'
 FINAL_OUTPUT_PATH = 'final_data.json'
 
 # --- Main Execution ---
