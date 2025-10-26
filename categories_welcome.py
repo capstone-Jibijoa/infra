@@ -364,6 +364,8 @@ def save_report(report_data):
                 sorted_categories = sorted(categories.keys())
                 for category in sorted_categories:
                     f.write(f"[ {category} ]\n")
+                for category in sorted_categories:
+                    f.write(f"[ {category} ]\n")
                     sorted_items = sorted(list(categories[category]))
                     for item in sorted_items:
                         f.write(f"  - {item}\n")
