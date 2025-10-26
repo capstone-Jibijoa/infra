@@ -10,8 +10,8 @@ AWS Infra &amp; DB
 ``` shell
 xlsx_to_json_pipeline/
 ├── data/
-│   ├── Quickpoll/
-│   └── Welcome/
+│   ├── Quickpoll/qpoll 엑셀 파일 위치
+│   └── Welcome/welcome 엑셀 파일 위치
 ├── convert_qpoll_to_json.py
 ├── convert_welcome_to_json.py
 └── merge_welcome_and_qpoll.py
