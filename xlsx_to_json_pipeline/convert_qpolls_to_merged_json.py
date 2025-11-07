@@ -2,18 +2,19 @@ import pandas as pd
 import json
 import numpy as np
 import glob
-import os
+import os 
 
-# 이 파이썬 파일(script.py)의 실제 위치를 기준으로 절대 경로를 만듦
-# 예: /.../infra/xlsx_to_json_pipeline/
+# 이 파이썬 파일의 실제 위치를 기준으로 절대 경로를 만듦
+# (예: /.../infra/xlsx_to_json_pipeline/)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# SCRIPT_DIR를 기준으로 data 폴더 경로를 설정
+# --- Configuration ---
 INPUT_PATTERN = os.path.join(SCRIPT_DIR, 'data/Quickpoll/qpoll*.xlsx')
 INPUT_FILES = glob.glob(INPUT_PATTERN)
 
-# SCRIPT_DIR를 기준으로 출력 폴더 경로를 설정
+# 출력 폴더와 최종 파일 경로를 설정
 OUTPUT_JSON_DIR = os.path.join(SCRIPT_DIR, 'json_output')
+OUTPUT_JSON_FILE = os.path.join(OUTPUT_JSON_DIR, 'merged_qpoll_data.json')
 
 COLUMN_MAPPING = {
     '구분': 'category',
@@ -27,7 +28,8 @@ COLUMN_MAPPING = {
 def process_qpoll_file(path):
     """
     Processes a single qpoll-formatted Excel file into a structured DataFrame.
-    [Final logic: Replaces '문항1' with '실제 질문 텍스트' in final output]
+    Handles multiple questions per file based on column/row order
+    and replaces '문항1' with the actual survey question text.
     """
     try:
         xlsx = pd.ExcelFile(path)
@@ -35,7 +37,6 @@ def process_qpoll_file(path):
         # 1. Sheet 2를 읽어, 라벨 맵과 '질문 텍스트'를 순서대로 리스트에 저장
         df_labels = xlsx.parse(xlsx.sheet_names[1], header=None)
         
-        # 라벨 맵과 질문 텍스트를 함께 저장할 리스트
         label_data_in_order = [] 
         row_index = 0
 
@@ -71,7 +72,7 @@ def process_qpoll_file(path):
             # 1-5. A열에서 'key' (실제 질문 텍스트)를 읽음
             question_text = df_labels.iloc[row_index, 0]
             if pd.isna(question_text):
-                question_text = "" # A열이 비어있을 경우
+                question_text = "" 
             question_text = question_text.strip()
             
             # 1-6. 'labels' 행 데이터(Series) 가져오기
@@ -121,11 +122,11 @@ def process_qpoll_file(path):
         
         if not question_cols:
             print(f"Warning: No question columns (G onwards) found in {path}")
-            return pd.DataFrame()
+            return pd.DataFrame() # 빈 DataFrame 반환
             
-        # 3-3. 2개의 딕셔너리를 생성
-        all_label_maps = {}    # "문항1" -> {라벨 맵} (라벨 변환용)
-        question_text_map = {} # "문항1" -> "실제 질문 텍스트" (교체용)
+        # 3-3. 2개의 딕셔너리를 생성 (라벨 변환용, 질문 텍스트 교체용)
+        all_label_maps = {}    
+        question_text_map = {} 
         
         for i, col_name in enumerate(question_cols):
             if i < len(label_data_in_order):
@@ -134,7 +135,7 @@ def process_qpoll_file(path):
                 question_text_map[col_name] = data_blob['text']
             else:
                 print(f"Warning: No label data found for column '{col_name}' (index {i})")
-                all_label_maps[col_name] = {}
+                all_label_maps[col_name] = {} # 빈 맵
                 question_text_map[col_name] = col_name # 기본값으로 '문항1' 사용
 
         # 4. Wide to Long (melt)
@@ -146,11 +147,11 @@ def process_qpoll_file(path):
             value_name='survey_answers_raw'
         )
 
-        # 5. 라벨 적용 함수 정
+        # 5. 라벨 적용 함수 정의
         def apply_labels_from_map(row):
             question_key = str(row['survey_question']).strip() 
             raw_value = row['survey_answers_raw']
-            value_label_map = all_label_maps.get(question_key) # 3-3에서 만든 맵
+            value_label_map = all_label_maps.get(question_key)
             
             if value_label_map is None:
                 return [f"Map not found for '{question_key}'"] if pd.notna(raw_value) else []
@@ -176,14 +177,14 @@ def process_qpoll_file(path):
         # 6. 라벨 적용
         df_melted['survey_answers'] = df_melted.apply(apply_labels_from_map, axis=1)
 
-        # 7. [신규] 'survey_question' 컬럼의 값을 "문항1" -> "실제 질문 텍스트"로 교체
+        # 7. 'survey_question' 컬럼의 값을 "문항1" -> "실제 질문 텍스트"로 교체
         df_melted['survey_question'] = df_melted['survey_question'].map(question_text_map).fillna(df_melted['survey_question'])
 
-        # 8. [수정] 컬럼 정리 (기존 7번)
+        # 8. 컬럼 정리
         df_melted.drop(columns=['survey_answers_raw'], inplace=True)
         df_melted.rename(columns=COLUMN_MAPPING, inplace=True)
 
-        # 9. [수정] NaN 값 정리 후 반환 (기존 8번)
+        # 9. NaN 값 정리 후 반환
         return df_melted.replace({np.nan: None})
 
     except Exception as e:
@@ -193,22 +194,20 @@ def process_qpoll_file(path):
 # --- Main Execution ---
 if __name__ == '__main__':
     
-    # JSON을 저장할 폴더 생성 (이미 있으면 넘어감)
+    # 출력 폴더 생성 (이미 있으면 통과)
     os.makedirs(OUTPUT_JSON_DIR, exist_ok=True)
     
-    total_files_processed = 0
+    # 모든 파일의 데이터를 통합할 딕셔너리 (루프 밖에 위치)
+    all_data_by_panel = {}
     
     try:
-        all_files = INPUT_FILES
-        if not all_files:
-            print("No 'qpoll*.xlsx' files found in 'data/Quickpoll/'.")
-        
-        for file_path in all_files:
-            print(f"--- Processing {file_path} ---")
+        if not INPUT_FILES:
+            print(f"No 'qpoll*.xlsx' files found in '{INPUT_PATTERN}'")
+
+        for file_path in INPUT_FILES:
+            print(f"Processing {file_path}...")
             
-            # 파일 루프가 돌 때마다 집계 딕셔너리를 새로 만듦
-            all_data_by_panel = {} 
-            
+            # 새 로직이 적용된 함수로 DataFrame 처리
             processed_df = process_qpoll_file(file_path)
             
             if processed_df.empty:
@@ -218,6 +217,7 @@ if __name__ == '__main__':
             for col in processed_df.select_dtypes(include=['datetime64[ns]']).columns:
                 processed_df[col] = processed_df[col].dt.strftime('%Y-%m-%dT%H:%M:%S')
 
+            # 데이터를 all_data_by_panel에 통합
             for record in processed_df.to_dict('records'):
                 panel_id = record.get('panel_id')
                 if not panel_id:
@@ -240,29 +240,23 @@ if __name__ == '__main__':
                 }
                 all_data_by_panel[panel_id]['surveys'].append(survey_data)
 
-            # 이 파일의 데이터 집계가 끝나면
-            final_records = list(all_data_by_panel.values())
-            
-            if not final_records:
-                print("No data to save for this file.")
-                continue
-
-            # 이 파일만의 JSON 파일 경로를 생성
-            # 예: 'data/Quickpoll/qpoll_A.xlsx' -> 'qpoll_A.json'
-            base_name = os.path.basename(file_path) # 'qpoll_A.xlsx'
-            file_name_without_ext, _ = os.path.splitext(base_name) # 'qpoll_A'
-            output_json_path = os.path.join(OUTPUT_JSON_DIR, f"{file_name_without_ext}.json")
-            
-            # 이 파일의 데이터를 JSON으로 즉시 저장
-            with open(output_json_path, 'w', encoding='utf-8') as f:
+        # 모든 파일 처리가 끝난 후 리스트로 변환
+        final_records = list(all_data_by_panel.values())
+        
+        if not final_records:
+            print("\nNo data was processed.")
+        else:
+            # 지정된 단일 파일 경로(merged_qpoll_data.json)에 저장
+            with open(OUTPUT_JSON_FILE, 'w', encoding='utf-8') as f:
                 json.dump(final_records, f, ensure_ascii=False, indent=4)
-            
-            print(f"Successfully processed {len(final_records)} users.")
-            print(f"Data saved to '{output_json_path}'\n")
-            total_files_processed += 1
 
-        print(f"\n--- Execution Finished ---")
-        print(f"Total files processed: {total_files_processed}")
+            print(f"\nSuccessfully processed {len(INPUT_FILES)} file(s).")
+            print(f"Total unique users processed: {len(final_records)}")
+            print(f"Data saved to '{OUTPUT_JSON_FILE}'")
+
+            if final_records:
+                print("\n--- First Record Example ---")
+                print(json.dumps(final_records[0], indent=4, ensure_ascii=False))
 
     except Exception as e:
         print(f"\n--- An error occurred during execution ---")
