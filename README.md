@@ -18,12 +18,12 @@ xlsx_to_json_pipeline/
 └── merge_welcome_and_qpoll.py
 ```
 ## 각 파일의 변환 역할
+json으로 변환된 모든 파일은 ./xlsx/json_output 폴더에 저장됩니다.
 ### Welcome
 상위 두 개 객체가 빈 값이므로, 지우고 사용해야 합니다.
 
 [convert_welcome_to_json.py](./xlsx_to_json_pipeline/convert_welcome_to_json.py) : Welcome1, 2 -> welcome_data.json
 ### Qpoll
-json으로 변환된 qpoll 파일은 ./xlsx/json_output 폴더에 저장됩니다.
 
 [convert_qpoll_to_json.py](./xlsx_to_json_pipeline/convert_qpoll_to_json.py) : qpoll.xlsx files -> *qpoll.json files*
 
