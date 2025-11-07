@@ -2,6 +2,7 @@
 # data / json 파일 / txt 파일
 # -------------------------
 data/
+old/
 *.json
 *.txt
 
