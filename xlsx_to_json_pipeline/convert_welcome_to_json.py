@@ -9,9 +9,10 @@ FILE_PATHS = {
     'file2': 'data/Welcome/welcome_2nd.xlsx'
 }
 MERGE_KEY = 'panel_id'
-OUTPUT_JSON_PATH = 'merged_data.json'
+OUTPUT_JSON_PATH = 'welcome_data.json'
 
 # 최종 영문 키 매핑 (Question Text -> English Key)
+# 별개의 답변으로 나올 수 있는 부분은 "_raw" 붙임
 FINAL_COLUMN_MAPPING = {
     # --- ID Fields --- String
     'x': 'panel_id',
@@ -21,8 +22,8 @@ FINAL_COLUMN_MAPPING = {
     # --- welcome1 ---
     '귀하의 성별은': 'gender',  # M, F
     '귀하의 출생년도는 어떻게 되십니까?': 'birth_year', # numeric
-    '회원님께서 현재 살고 계신 지역은 어디인가요?': 'region_major', # string
-    '그렇다면, [VALUE:Q12]의 어느 구에 살고 계신가요?': 'region_minor', # string
+    '회원님께서 현재 살고 계신 지역은 어디인가요?': 'region_major', # String
+    '그렇다면, [VALUE:Q12]의 어느 구에 살고 계신가요?': 'region_minor', # String
 
     # --- welcome2 ---
     # Welcome_2nd.xlsx label sheet의 변수명으로 표시: SINGLE 형식
@@ -31,22 +32,22 @@ FINAL_COLUMN_MAPPING = {
     '가족수': 'family_size',    # SINGLE : 1, 2, ..., 5
     '최종학력': 'education_level',  # SINGLE : 1, 2, 3, 4
     '직업': 'job_title_raw',    # SINGLE : 1, 2, ..., 15, String, (필드 값 없음)
-    '직무': 'job_duty', # SINGLE : 1, 2, ..., 21, String, (필드 값 없음)
+    '직무': 'job_duty_raw', # SINGLE : 1, 2, ..., 21, String, (필드 값 없음)
     '월평균 개인소득': 'income_personal_monthly',   # SINGLE : 1, 2, ..., 11, (필드 값 없음)
     '월평균 가구소득': 'income_household_monthly',  # SINGLE : 1, 2, ..., 11, (필드 값 없음)
     '보유전제품': 'owned_electronics',  # MULTI
-    '보유 휴대폰 단말기 브랜드': 'phone_brand', # SINGLE : 1, 2, 3, String, (필드 값 없음)
+    '보유 휴대폰 단말기 브랜드': 'phone_brand_raw', # SINGLE : 1, 2, 3, String, (필드 값 없음)
     '보유 휴대폰 모델명': 'phone_model_raw',    # SINGLE : Q9_2 의 항목, 기타 숫자(이상값), String, (필드 값 없음)
     '보유차량여부': 'car_ownership',    # SINGLE : 1, 2
-    '자동차 제조사': 'car_manufacturer',    # SINGLE : Q11_1의 항목, String, (필드 값 없음)
+    '자동차 제조사': 'car_manufacturer_raw',    # SINGLE : Q11_1의 항목, String, (필드 값 없음)
     '자동차 모델': 'car_model_raw', # SINGLE : Q11_2의 항목, String, 몰라요, (필드 값 없음)
     '흡연경험': 'smoking_experience',   # MULTI
     '흡연경험 담배브랜드': 'smoking_brand', # MULTI
-    '흡연경험 담배브랜드(기타브랜드)': 'smoking_brand_etc', # String
+    '흡연경험 담배브랜드(기타브랜드)': 'smoking_brand_etc_raw', # String
     '궐련형 전자담배/가열식 전자담배 이용경험': 'e_cigarette_experience',   # MULTI
-    '흡연경험 담배 브랜드(기타내용)': 'smoking_brand_other_details',    # String
+    '흡연경험 담배 브랜드(기타내용)': 'smoking_brand_other_details_raw',    # String
     '음용경험 술': 'drinking_experience',   # MULTI
-    '음용경험 술(기타내용)': 'drinking_experience_other_details',   # string
+    '음용경험 술(기타내용)': 'drinking_experience_other_details_raw',   # String
 }
 
 # --- 1. 파일 로드 및 3단계 컬럼명 변환 함수 ---
@@ -139,7 +140,7 @@ def integrate_and_finalize(file_paths, final_mapping):
     # --- Handle Multi-Select Fields Post-Merge ---
     multi_select_keys = [
         'owned_electronics', 'smoking_experience', 'smoking_brand',
-        'e_cigarette_experience', 'drinking_experience', 'smoking_brand_other_details'
+        'e_cigarette_experience', 'drinking_experience', 'smoking_brand_other_details_raw'
     ]
 
     # Create reverse map to find Q-code from English key
