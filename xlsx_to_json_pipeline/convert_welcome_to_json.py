@@ -1,15 +1,19 @@
 import pandas as pd
 import json
 import numpy as np
+import os
 
 # --- 0. 설정 및 최종 컬럼 매핑 정의 ---
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 FILE_PATHS = {
-    'file1': 'data/Welcome/Welcome_1st.xlsx',
-    'file2': 'data/Welcome/welcome_2nd.xlsx'
+    'file1': os.path.join(SCRIPT_DIR, 'data/Welcome/Welcome_1st.xlsx'),
+    'file2': os.path.join(SCRIPT_DIR, 'data/Welcome/welcome_2nd.xlsx')
 }
 MERGE_KEY = 'panel_id'
-OUTPUT_JSON_PATH = 'welcome_data.json'
+
+OUTPUT_JSON_DIR = os.path.join(SCRIPT_DIR, 'json_output')
+OUTPUT_JSON_PATH = os.path.join(OUTPUT_JSON_DIR, 'welcome_data.json')
 
 # 최종 영문 키 매핑 (Question Text -> English Key)
 # 별개의 답변으로 나올 수 있는 부분은 "_raw" 붙임
