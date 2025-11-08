@@ -12,6 +12,9 @@ xlsx_to_json_pipeline/
 ├── data/
 │   ├── Quickpoll/qpoll 엑셀 파일 위치
 │   └── Welcome/welcome 엑셀 파일 위치
+├── welcome_json_output/welcome_data.json
+├── qpoll_json_output/qpoll_join_XXXXX.json
+├── merged_qpoll_json_output/merged_qpoll_data.json
 ├── convert_qpoll_to_json.py
 ├── convert_qpolls_to_merged_json.py
 ├── convert_welcome_to_json.py
