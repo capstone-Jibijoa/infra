@@ -996,9 +996,12 @@ def main():
                 })
 
         elif topic_file_id in TOPIC_FORMATTERS_BY_SURVEY:
-            # --- 처리 방식 B: 답변당 1개 객체 (다중 질문 파일용) ---
+            # --- 처리 방식 B: 답변당 1개 객체 (질문별로 파일 분리) ---
             formatter = TOPIC_FORMATTERS_BY_SURVEY[topic_file_id]
             print(f"  > (방식 B: 답변 단위) '{formatter.__name__}' 함수 적용")
+            
+            # 1. 데이터를 질문별로 임시 저장할 딕셔너리
+            data_by_question = {}
 
             for panel in panel_data:
                 if not isinstance(panel, dict): continue
@@ -1008,17 +1011,57 @@ def main():
                 for survey in panel.get('surveys', []):
                     if not isinstance(survey, dict): continue
                     
+                    # 키 이름을 'survey_question'으로 변경
                     question = survey.get('survey_question', 'N/A')
+                    if question == 'N/A': continue # 질문 없는 데이터 건너뛰기
+
                     answers = survey.get('survey_answers', [])
                     
-                    # 포맷터가 (panel_id, answers, question)을 받음
+                    # 2. 데이터를 질문 텍스트를 Key로 하여 재그룹화
+                    if question not in data_by_question:
+                        data_by_question[question] = []
+                    
+                    # (panel_id, answers) 튜플을 임시 저장
+                    data_by_question[question].append((panel_id, answers))
+
+            # 3. 재그룹화된 딕셔너리를 순회하며 '질문별'로 파일 생성
+            print(f"  > {len(data_by_question)}개의 하위 질문을 발견. 개별 파일로 분리합니다.")
+            
+            sub_question_index = 0
+            for question, responses in data_by_question.items():
+                sub_question_index += 1
+                generated_data_for_this_question = []
+                
+                # 4. 이 질문에 해당하는 모든 응답(responses)을 순회
+                for panel_id, answers in responses:
+                    # 5. 포맷터가 (panel_id, answers, question)을 받아 문장 생성
                     sentence = formatter(panel_id, answers, question)
                     
-                    generated_data.append({
+                    generated_data_for_this_question.append({
                         "panel_id": panel_id,
                         "original_question": question,
                         "sentence_for_embedding": sentence
                     })
+
+                # 6. 이 '질문'에 대한 최종 출력 객체 생성
+                output_data = {
+                    "topic_file_id": topic_file_id, # 원본 파일 (예: qpoll_ai_chatbots)
+                    "topic_question": question,   # 이 파일의 특정 질문
+                    "generated_data": generated_data_for_this_question
+                }
+
+                # 7. 파일명 생성 (예: 03_1_AI 챗봇 서비스는.json)
+                safe_question_name = clean_filename(question)
+                # (입력파일 순번)_(하위질문 순번)_(질문명).json
+                filename = f"{i+1:02d}_{sub_question_index}_{safe_question_name}.json"
+                output_path = os.path.join(OUTPUT_DIR, filename)
+                
+                try:
+                    with open(output_path, 'w', encoding='utf-8') as f:
+                        json.dump(output_data, f, ensure_ascii=False, indent=4)
+                    file_count += 1 # 👈 파일 생성마다 카운트 증가
+                except Exception as e:
+                    print(f"  > 파일 저장 오류 ({filename}): {e}")
         else:
             # --- 처리 방식 C: 매핑되지 않은 파일 처리 ---
             print(f"  > [경고] 이 파일은 'TOPIC_FORMATTERS_BY_PANEL' 또는 'TOPIC_FORMATTERS_BY_SURVEY' 맵에 등록되지 않았습니다.")
