@@ -12,7 +12,7 @@ INPUT_DIR = os.path.join(
     'qpoll_json_output'
 )
 INPUT_JSON_FILES = glob.glob(os.path.join(INPUT_DIR, '*.json'))
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, 'sentence_output_by_topic')
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, 'sentence_output_by_qpoll_topic')
 
 
 # --- 2. 문장 변환 템플릿 정의 ---
