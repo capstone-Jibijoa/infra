@@ -12,7 +12,7 @@ FILE_PATHS = {
 }
 MERGE_KEY = 'panel_id'
 
-OUTPUT_JSON_DIR = os.path.join(SCRIPT_DIR, 'json_output')
+OUTPUT_JSON_DIR = os.path.join(SCRIPT_DIR, 'welcome_json_output')
 OUTPUT_JSON_PATH = os.path.join(OUTPUT_JSON_DIR, 'welcome_data.json')
 
 # 최종 영문 키 매핑 (Question Text -> English Key)
@@ -181,6 +181,9 @@ def integrate_and_finalize(file_paths, final_mapping):
 
 # --- 메인 실행 ---
 if __name__ == '__main__':
+    # 출력 폴더 생성 (이미 있으면 통과)
+    os.makedirs(OUTPUT_JSON_DIR, exist_ok=True)
+    
     try:
         final_df = integrate_and_finalize(FILE_PATHS, FINAL_COLUMN_MAPPING)
         final_json_list = final_df.to_dict('records')

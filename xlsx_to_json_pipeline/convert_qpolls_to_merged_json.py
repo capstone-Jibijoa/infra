@@ -13,7 +13,7 @@ INPUT_PATTERN = os.path.join(SCRIPT_DIR, 'data/Quickpoll/qpoll*.xlsx')
 INPUT_FILES = glob.glob(INPUT_PATTERN)
 
 # 출력 폴더와 최종 파일 경로를 설정
-OUTPUT_JSON_DIR = os.path.join(SCRIPT_DIR, 'json_output')
+OUTPUT_JSON_DIR = os.path.join(SCRIPT_DIR, 'merged_qpoll_json_output')
 OUTPUT_JSON_FILE = os.path.join(OUTPUT_JSON_DIR, 'merged_qpoll_data.json')
 
 COLUMN_MAPPING = {
