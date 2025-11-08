@@ -12,7 +12,7 @@ FILE_PATHS = {
 }
 MERGE_KEY = 'panel_id'
 
-OUTPUT_JSON_DIR = os.path.join(SCRIPT_DIR, 'json_output')
+OUTPUT_JSON_DIR = os.path.join(SCRIPT_DIR, 'welcome_json_output')
 OUTPUT_JSON_PATH = os.path.join(OUTPUT_JSON_DIR, 'welcome_data.json')
 
 # 최종 영문 키 매핑 (Question Text -> English Key)
