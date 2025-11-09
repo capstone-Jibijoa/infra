@@ -18,7 +18,7 @@ QPOLL_INPUT_DIR = os.path.join(
 
 # [출력] 최종 마스터 qpoll 파일 경로
 OUTPUT_DIR = os.path.join(SCRIPT_DIR, 'merged_sentence_output_by_qpoll_topic')
-OUTPUT_FILE = os.path.join(SCRIPT_DIR, 'merged_qpoll_text.json')
+OUTPUT_FILE = os.path.join(OUTPUT_DIR, 'merged_qpoll_text.json')
 
 def load_json(path):
     """JSON 파일을 안전하게 로드"""
@@ -30,6 +30,7 @@ def load_json(path):
         return None
 
 def main():
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
     # 모든 qpoll 답변 객체를 저장할 마스터 리스트
     master_data = []
     
@@ -50,7 +51,7 @@ def main():
             print(f"  > 건너뛰기: {os.path.basename(file_path)} (형식 오류)")
             continue
             
-        topic_id = data["topic_file_id"]
+        # topic_id = data["topic_file_id"]
         generated_data = data["generated_data"]
         
         # 'generated_data' 리스트를 순회
@@ -61,7 +62,7 @@ def main():
             if sentence: 
                 master_data.append({
                     "panel_id": item.get("panel_id"),
-                    "topic_id": topic_id,
+                    #" topic_id": topic_id,
                     "question": item.get("original_question", "N/A"),
                     "sentence": sentence
                 })
