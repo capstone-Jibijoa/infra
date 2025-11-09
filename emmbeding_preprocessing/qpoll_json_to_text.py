@@ -988,10 +988,24 @@ def main():
             for panel in panel_data:
                 if not isinstance(panel, dict): continue
                 
-                sentence = formatter(panel) # 포맷터가 'panel' 객체를 통째로 받음
+                # 1. 포맷터가 'panel' 객체를 받아 문장 생성 (기존 동일)
+                sentence = formatter(panel) 
                 
+                # 2. 원본 질문(question) 텍스트 추출
+                original_question = "N/A" # 기본값
+                try:
+                    # 단일 질문 파일이므로, surveys 리스트의 첫번째[0] 항목에서
+                    # 'survey_question' 키를 가져옵니다.
+                    surveys_list = panel.get('surveys', [])
+                    if surveys_list:
+                        original_question = surveys_list[0].get('survey_question', 'N/A')
+                except Exception:
+                    pass # 비어있는 경우 등 예외 처리
+                
+                # 3. [수정] original_question을 포함하여 저장
                 generated_data.append({
                     "panel_id": panel.get('panel_id', 'UNKNOWN_ID'),
+                    "original_question": original_question,
                     "sentence_for_embedding": sentence
                 })
 
@@ -1046,7 +1060,7 @@ def main():
                 # 6. 이 '질문'에 대한 최종 출력 객체 생성
                 output_data = {
                     "topic_file_id": topic_file_id, # 원본 파일 (예: qpoll_ai_chatbots)
-                    "topic_question": question,   # 이 파일의 특정 질문
+                    # "topic_question": question,   # 이 파일의 특정 질문
                     "generated_data": generated_data_for_this_question
                 }
 
