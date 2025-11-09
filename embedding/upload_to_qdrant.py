@@ -28,14 +28,14 @@ def setup_qdrant_collection(client, collection_name, vector_size):
         collection_names = [c.name for c in collections]
         
         if collection_name in collection_names:
-            print(f"Qdrant 컬렉션 '{collection_name}'이(가) 이미 존재합니다. 이어서 업로드합니다.")
-            # client.recreate_collection(
-            #     collection_name=collection_name,
-            #     vectors_config=models.VectorParams(
-            #         size=vector_size, 
-            #         distance=models.Distance.COSINE # 👈 Kure v1 권장 방식
-            #     )
-            # )
+            print(f"Qdrant 컬렉션 '{collection_name}'이(가) 이미 존재합니다. 재생성합니다.")
+            client.recreate_collection(
+                collection_name=collection_name,
+                vectors_config=models.VectorParams(
+                    size=vector_size, 
+                    distance=models.Distance.COSINE # 👈 Kure v1 권장 방식
+                )
+            )
         else:
             print(f"Qdrant 컬렉션 '{collection_name}'을(를) 생성합니다.")
             client.recreate_collection(
