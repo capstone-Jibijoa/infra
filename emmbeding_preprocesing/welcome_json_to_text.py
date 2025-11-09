@@ -61,19 +61,39 @@ def format_personal_info(panel):
     # (panel.get(key)는 값이 없으면 None을 반환합니다)
     gender = panel.get("gender")
     birth_year = panel.get("birth_year")
-    region = panel.get("region_major") # 예시로 '주요' 지역만 사용
+    region_major = panel.get("region_major")
+    region_minor = panel.get("region_minor")
     marital = panel.get("marital_status")
+    children_count = panel.get("children_count")
+    
+    family_size = panel.get("family_size")
 
-    # 문장 조각들을 리스트에 담아 None이 아닌 것만 합칩니다.
+    # 문장 조각들을 리스트에 담아 None이 아닌 것만 합친다
     parts = []
+
     if gender:
-        parts.append(f"성별은 {gender}")
+        parts.append(f"성별은 {gender}, ")
     if birth_year:
-        parts.append(f"{birth_year}년생")
-    if region:
-        parts.append(f"{region} 거주")
+        parts.append(f"{birth_year}년생 ")
+    if region_major:
+        parts.append(f"{region_major} ")
+    if region_minor:
+        parts.append(f"{region_minor}" 거주)
     if marital:
         parts.append(f"{marital} 상태")
+    # 1. 값이 None이 아니고, 숫자인지(int or float) 확인
+    if children_count is not None and isinstance(children_count, (int, float)):
+        try:
+            # 2. float를 int로 변환합니다 (1.0 -> 1)
+            children_int = int(children_count)
+            
+            # 3. (선택) 0명 이상일 때만 문장에 포함
+            if children_int >= 0: 
+                parts.append(f"자녀 {children_int}명")
+                
+        except (ValueError, TypeError):
+            # "NaN" 같은 문자열이 혹시 들어올 경우를 대비한 방어 코드
+            pass
 
     # 모든 정보가 비어있으면 None 반환
     if not parts:
