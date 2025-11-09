@@ -8,12 +8,13 @@ from tqdm import tqdm # 진행률 표시
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # [입력] 임베딩이 완료된 파일
-INPUT_FILE = os.path.join(SCRIPT_DIR, 'qpoll_embeddings.json')
+INPUT_FILE = os.path.join(SCRIPT_DIR, 'qpoll_upload_ready.json')
 
 # [Qdrant 설정]
-QDRANT_HOST = "localhost"
+EMBEDDING_MODEL_NAME = "nlpai-lab/KURE-v1"
+QDRANT_HOST = "52.63.128.220"
 QDRANT_PORT = 6333
-QPOLL_COLLECTION_NAME = "qpoll_v1" 
+QPOLL_COLLECTION_NAME = "qpoll_vectors_v2" 
 
 # [성능 설정]
 BATCH_SIZE = 128 # 👈 DB 업로드는 더 큰 배치가 효율적일 수 있습니다.
