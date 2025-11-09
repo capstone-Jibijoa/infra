@@ -12,7 +12,7 @@ PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 # [입력] qpoll 문장 파일이 있는 폴더
 QPOLL_INPUT_DIR = os.path.join(
     PROJECT_ROOT,
-    'emmbeding_preprocessing', # 'json_to_text.py' 스크립트가 있던 폴더
+    'embedding_preprocessing', # 'json_to_text.py' 스크립트가 있던 폴더
     'sentence_output_by_qpoll_topic' # qpoll 결과 폴더
 )
 
